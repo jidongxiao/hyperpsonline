@@ -574,6 +574,20 @@ intercepts at low level, such as @code{ctrl-alt-f1} in X Window.
 ETEXI
 
     {
+        .name       = "ps",
+        .args_type  = "",
+        .params     = "",
+        .help       = "report a list of the current processes in the guest",
+        .mhandler.cmd = hmp_ps,
+    },
+
+STEXI
+@item q or quit
+@findex quit
+Quit the emulator.
+ETEXI
+
+    {
         .name       = "system_reset",
         .args_type  = "",
         .params     = "",

@@ -1417,6 +1417,11 @@ static void do_physical_memory_dump(Monitor *mon, const QDict *qdict)
     memory_dump(mon, count, format, size, addr, 1);
 }
 
+static void hmp_ps(Monitor *mon, const QDict *qdict)
+{
+    monitor_printf(mon, "hello ps\n");
+}
+
 static void do_print(Monitor *mon, const QDict *qdict)
 {
     int format = qdict_get_int(qdict, "format");
