@@ -1,0 +1,159 @@
+So the address for the first process's name is: 0x85df24
+So the address for the second process's name is: 0x5c0ac2
+So the address for the second process's name is: 0x831cae
+So the address for the second process's name is: 0xc099dc
+So the address for the second process's name is: 0x2d5705e
+So the address for the second process's name is: 0x2d9a014
+So the address for the second process's name is: 0x2ddcc94
+So the address for the second process's name is: 0x2dee2de
+So the address for the second process's name is: 0x2defec4
+min is 0x2defac4
+value_of_next0 is 0x2defd20
+max is 0x2df02c4
+min is 0x2defac4
+value_of_next0 is 0x2defd20
+max is 0x2df02c4
+offset_of_name_in_task is 0x1a4
+offset_of_next_in_task is 0x4
+value_of_next1 is 0x2def7e0
+the buffer we read in is kextd
+and proc_name2 is kextd
+Now we found the offset of the next pointer of the first process is 0x85dd84
+And the address for the first process name is: 0x85df24
+And the address for the second process name is: 0x2defec4
+offset_of_name_in_task is 0x1a4
+offset_of_next_in_task is 0x4
+Name of the process is kernel_task
+Name of the process is launchd
+Name of the process is kextd
+Name of the process is DirectoryService
+Name of the process is notifyd
+Name of the process is diskarbitrationd
+Name of the process is configd
+Name of the process is syslogd
+Name of the process is distnoted
+Name of the process is mDNSResponder
+Name of the process is securityd
+Name of the process is slapd
+Name of the process is ntpd
+Name of the process is named
+Name of the process is Python
+Name of the process is httpd
+Name of the process is nmbd
+Name of the process is krb5kdc
+Name of the process is kadmind
+Name of the process is Python
+Name of the process is usbmuxd
+Name of the process is SystemStarter
+Name of the process is servermgrd
+Name of the process is RFBRegisterMDNS
+Name of the process is PasswordService
+Name of the process is Python
+Name of the process is mds
+Name of the process is loginwindow
+Name of the process is KernelEventAgent
+Name of the process is hidd
+Name of the process is fseventsd
+Name of the process is emond
+Name of the process is dynamic_pager
+Name of the process is autofsd
+Name of the process is coreservicesd
+Name of the process is WindowServer
+Name of the process is Python
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is httpd
+Name of the process is Python
+Name of the process is Python
+Name of the process is Python
+Name of the process is Python
+Name of the process is Python
+Name of the process is Python
+Name of the process is memcached
+Name of the process is Python
+Name of the process is Python
+Name of the process is coreaudiod
+Name of the process is httpd
+Name of the process is ocspd
+Name of the process is serialnumberd
+Name of the process is perl5.10.0
+Name of the process is s2s
+Name of the process is router
+Name of the process is sm
+Name of the process is c2s
+Name of the process is resolver
+Name of the process is mu-conference
+Name of the process is softwareupdate
+Name of the process is mdworker
+Name of the process is launchd
+Name of the process is Dock
+Name of the process is SystemUIServer
+Name of the process is Finder
+Name of the process is mdworker
+Name of the process is fontd
+Name of the process is UserEventAgent
+Name of the process is ARDAgent
+Name of the process is AirPort Base Sta
+Name of the process is pboard
+Name of the process is airportd
+Name of the process is CCacheServer
+Name of the process is AppleVNCServer
+Name of the process is quicklookd
+Name of the process is backupd
+Name of the process is and 8848 wired pages
+standard timeslicing quantum is 10000 us
+mig_table_max_displ = 73
+AppleACPICPU: ProcessorId=0 LocalApicId=0 Enabled
+calling mpo_policy_init for TMSafetyNet
+Security policy loaded: Safety net for Time Machine (TMSafetyNet)
+calling mpo_policy_init for Quarantine
+Security policy loaded: Quarantine policy (Quarantine)
+calling mpo_policy_init for Sandbox
+Security policy loaded: Seatbelt sandbox policy (Sandbox)
+Copyright (c) 1982, 1986, 1989, 1991, 1993
+	The Regents of the University of California. All rights reserved.
+
+MAC Framework successfully initialized
+using 5242 buffer headers and 4096 cluster IO buffer headers
+IOAPIC: Version 0x11 Vectors 64:87
+ACPI: System State [S0 S3 S4 S5] (S3)
+RTC: Only single RAM bank (128 bytes)
+mbinit: done (64 MB memory set for mbuf pool)
+rooting via boot-uuid from /chosen: 853A774E-0A08-374F-B899-BC9E36E5DFC5
+From path: "uuid", Waiting on <dict ID="0"><key>IOProviderClass</key><string ID="1">IOResources</string><key>IOResourceMatch</key><string ID="2">boot-uuid-media</string></dict>
+com.apple.AppleFSCompressionTypeZlib load succeeded
+AppleIntelCPUPowerManagementClient: ready
+SATA WARNING: IDENTIFY DEVICE checksum not implemented.
+Got boot device = IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/S20@4/AppleAHCI/PRT2@2/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice/IOBlockStorageDriver/QEMU HARDDISK Media/IOGUIDPartitionScheme/Macintosh@2
+BSD root: disk0s2, major 14, minor 2
+jnl: unknown-dev: replay_journal: from: 2635264 to: 4724736 (joffset 0xf0000)
+jnl: unknown-dev: journal replay done.
+AppleIntelCPUPowerManagement: initialization complete
+hfs: Removed 2 orphaned / unlinked files and 0 directories 
+IPv6 packet filtering initialized, default to accept, logging disabled
+AppleIntel8254XEthernet: Ethernet address 52:54:00:12:34:56
+systemShutdown false
+Ethernet [Intel8254x]: Link up on en0, 10-Megabit, Half-duplex, No flow-control, Debug [796d,ac00,0de1,0e00,41e0,3c00]
+Apple16X50ACPI1: Identified Serial Port on ACPI Device=COM1
+ACPI_SMC_PlatformPlugin::pushCPU_CSTData - _CST evaluation failed
+Apple16X50UARTSync1: Detected 16550AF/C/CF FIFO=16 MaxBaud=115200
+SMC::smcPublishVersion ERROR: smcGetVers for SMC 0 failed (0xff)
+SMC::smcNotificationPublishedHandler ERROR: smcWriteKey NTOK failed (0xff), will not receive interrupts
+DSMOS has arrived
+
+Total number of processes: 91
+(qemu) 
+
