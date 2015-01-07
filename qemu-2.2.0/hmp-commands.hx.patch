@@ -1,0 +1,23 @@
+--- hmp-commands.hx.orig	2014-12-31 11:57:05.634234051 -0800
++++ hmp-commands.hx	2014-12-31 15:04:20.190521711 -0800
+@@ -574,6 +574,20 @@ intercepts at low level, such as @code{c
+ ETEXI
+ 
+     {
++        .name       = "ps",
++        .args_type  = "os:s",
++        .params     = "os",
++        .help       = "report a list of the current processes in the guest",
++        .mhandler.cmd = hmp_ps,
++    },
++
++STEXI
++@item q or quit
++@findex quit
++Quit the emulator.
++ETEXI
++
++    {
+         .name       = "system_reset",
+         .args_type  = "",
+         .params     = "",
