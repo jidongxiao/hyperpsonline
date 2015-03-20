@@ -1356,10 +1356,11 @@ long offset_of_name0 = -1;
 long offset_of_name0_align4 = -1;
 long offset_of_name0_least4 = -1;
 long offset_of_name1 = -1;
+long offset_of_name2 = -1;
 long proc_offset_of_next;
 long offset_of_name;
 long offset_of_next;
-unsigned long offset_of_pid;
+long offset_of_pid;
 
 long offset_of_name_in_task = -1;
 long offset_of_next_in_task = -1;
@@ -1388,6 +1389,9 @@ int get_offsets_point_to_task_struct(void);
 long get_offsets_second_pass(void);
 long get_offsets(void);
 void print_processes(void);
+
+// For kernel modules
+void print_modules(void);
 
 /* Return 1 if find the 'next' pointer offset and set it to global variable 'proc_offset_of_next'
  * Return 0 if not
@@ -1427,7 +1431,7 @@ int get_offsets_point_to_linkedlist(void)
 
             // offset (from the start of the dump file) of the name string.
             offset_of_name0 = name_pos0 - buffer + starting_addr + read_counter0 * BUFFER_SIZE;
-            printf("Address for the first process name is: 0x%lx\n", offset_of_name0);
+////            printf("Address for the first process name is: 0x%lx\n", offset_of_name0);
 //            {// Debug Only, Please Comment Out //
 //                addr1 = addr1 + BUFFER_SIZE;
 //                read_counter0++;
@@ -1442,7 +1446,7 @@ int get_offsets_point_to_linkedlist(void)
 
                     // offset (from the start of the dump file) of the second process's name string.
                     offset_of_name1 = name_pos1 - buffer + starting_addr + read_counter1 * BUFFER_SIZE;
-                    printf("Address for the second process name is: 0x%lx\n", offset_of_name1);
+////                    printf("Address for the second process name is: 0x%lx\n", offset_of_name1);
 
                     /* Search for the next pointer position.
                      * Ranging from (offset of first process name - 1 page) to (offset of first process name + 1 page)
@@ -1458,9 +1462,9 @@ int get_offsets_point_to_linkedlist(void)
 //                      printf("And the next pointer of process 1 (right hand)  is at: 0x%lx\n", (offset_of_name1-0x400+i*4) );
                         if ((*(unsigned int*)ptr_next) == offset_of_name1-0x400+i*4) {
                             proc_offset_of_next = offset_of_name0+i*4-0x400;
-                            printf("Now we found the offset of the next pointer of the first process is 0x%lx\n", offset_of_name0+i*4-0x400);
-                            printf("And the address for the first process name is: 0x%lx\n", offset_of_name0);
-                            printf("And the address for the second process name is: 0x%lx\n", offset_of_name1);
+////                            printf("Now we found the offset of the next pointer of the first process is 0x%lx\n", offset_of_name0+i*4-0x400);
+////                            printf("And the address for the first process name is: 0x%lx\n", offset_of_name0);
+////                            printf("And the address for the second process name is: 0x%lx\n", offset_of_name1);
                             return 1;
                         }
                         addr_next = addr_next + 4;
@@ -1475,9 +1479,9 @@ int get_offsets_point_to_linkedlist(void)
 //                      printf("And the next pointer of process 1 (right hand)  is at: 0x%lx\n", (offset_of_name1-0x402+i*4) );
                         if ((*(unsigned int*)ptr_next) == offset_of_name1-0x402+i*4) {
                             proc_offset_of_next = offset_of_name0+i*4-0x402;
-                            printf("Now we found the offset of the next pointer of the first process is 0x%lx\n", offset_of_name0+i*4-0x402);
-                            printf("And the address for the first process name is: 0x%lx\n", offset_of_name0);
-                            printf("And the address for the second process name is: 0x%lx\n", offset_of_name1);
+////                            printf("Now we found the offset of the next pointer of the first process is 0x%lx\n", offset_of_name0+i*4-0x402);
+////                            printf("And the address for the first process name is: 0x%lx\n", offset_of_name0);
+////                            printf("And the address for the second process name is: 0x%lx\n", offset_of_name1);
                             return 1;
                         }
                         addr_next = addr_next + 4;
@@ -1694,6 +1698,57 @@ long get_offsets_second_pass(void)    // When "next" points to the start of the 
     }
 }
 
+long vdump_get_offset_of_pid()
+{
+    // When we calculate the offset of pid, we call fread and store the output in ptr_pid[]
+    char ptr_pid[4];
+    char ptr_next[4];
+    long ptr_mark0 = 0;
+
+    CPUArchState *env;
+    env = mon_get_cpu();
+    cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name1 + proc_offset_of_next - offset_of_name0, ptr_next, 4, 0);
+    offset_of_name2 = (*(unsigned int*)ptr_next) - (proc_offset_of_next - offset_of_name0);
+//    printf("And the address for the 3rd process name is: 0x%lx\n", offset_of_name2);
+                    /* Search for the pid position.
+                     * Ranging from (offset of first process name - 1 page) to (offset of first process name + 1 page)
+                     */
+                    int i;
+                    // assuming the "pid" is before or after the "name", but within 1 page distance.
+                    for(i = 0; i < 512; i++) {
+                        cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name1 - 0x400 + i*4, ptr_pid, 4, 0);
+                        if ((*(unsigned int*)ptr_pid) == 1) {
+//                            printf("1. Now we found the pid of the 1st process at address 0x%lx is %d\n", offset_of_name1 + i*4 - 0x400, (*(unsigned int*)ptr_pid) );
+                            cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name2 - 0x400 + i*4, ptr_pid, 4, 0);
+//                            printf("1. Now we found the pid of the 2nd process at address 0x%lx is %d\n", offset_of_name2 + i*4 - 0x400, (*(unsigned int*)ptr_pid) );
+                            if ((*(unsigned int*)ptr_pid) == 2) {
+//                                    printf("Now we found the offset of the pid, it is %ld\n", (i*4 - 0x402));
+                                    return (i*4 - 0x400);
+                            }
+                        }
+                    }
+
+                    // assuming the "pid" is before or after the "name", but within 1 page distance.
+                    for(i = 0; i < 512; i++) {
+                        cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name1 - 0x402 + i*4, ptr_pid, 4, 0);
+                        if ((*(unsigned int*)ptr_pid) == 1) {
+//                            printf("2. Now we found the pid of the 1st process at address 0x%lx is %d\n", offset_of_name1 + i*4 - 0x402, (*(unsigned int*)ptr_pid) );
+                            cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name2 - 0x402 + i*4, ptr_pid, 4, 0);
+//                            printf("2. Now we found the pid of the 2nd process at address 0x%lx is %d\n", offset_of_name2 + i*4 - 0x402, (*(unsigned int*)ptr_pid) );
+                            if ((*(unsigned int*)ptr_pid) == 2) {
+//                                    printf("Now we found the offset of the pid, it is %ld\n", (i*4 - 0x402));
+                                    return (i*4 - 0x402);
+                            }
+                        }
+                    }
+
+    return 0;
+
+}
+
+
+
+
 long get_offsets(void)
 {
     long found_next = 0;
@@ -1701,6 +1756,8 @@ long get_offsets(void)
     if (next_to_next == 1) {
     /* When "next" points to the "next" pointer, rather than the start of the next structure, this is true for Linux Kernel 2.6 as well as for Windows 7. */
         found_next = get_offsets_point_to_linkedlist();
+        offset_of_pid = vdump_get_offset_of_pid();
+//        printf("Now we found the offset of the pid, it is %ld\n", offset_of_pid);
     } else if (task_4k_align == 1) {
     /* When "next" points to the start of the next structure, and the task_struct is 4k-aligned, this is true for Linux Kernel 2.4. */
         found_next = get_offsets_point_to_task_struct();
@@ -1725,6 +1782,7 @@ void print_processes(void)
 {
     char ptr_next[4];
     char ptr_name[BUFFER_SIZE];
+    char ptr_pid[4];
     long next_pointer_value;
 
     CPUArchState *env;
@@ -1732,12 +1790,19 @@ void print_processes(void)
 
     print_counter=0; // We have to manually initialize this counter every time we print, otherwise it is going to grow continuously.
 
+    printf("	PID	COMMAND\n");
     cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name0, ptr_name, BUFFER_SIZE, 0);  // Get process 0 name.
-    printf("Name of the process is %s\n",ptr_name);     // print process 0 name
+    cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name0 + offset_of_pid, ptr_pid, 4, 0);  // Get process 0 pid.
+    printf("	%d	",*(unsigned int*)ptr_pid);
+
+    printf("%s\n",ptr_name);     // print process 0 name
     print_counter++;
 
     cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name1, ptr_name, BUFFER_SIZE, 0);  // Get process 1 name.
-    printf("Name of the process is %s\n",ptr_name);     // print process 1 name
+    cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name1 + offset_of_pid, ptr_pid, 4, 0);  // Get process 1 pid.
+    printf("	%d	",*(unsigned int*)ptr_pid);
+
+    printf("%s\n",ptr_name);     // print process 1 name
     print_counter++;
 
 //    printf("proc_offset_of_next is 0x%lx\n", proc_offset_of_next);
@@ -1752,9 +1817,11 @@ void print_processes(void)
                 break;
             next_pointer_value=(*(unsigned int*)ptr_next);
             cpu_memory_rw_debug(ENV_GET_CPU(env), next_pointer_value-(proc_offset_of_next-offset_of_name0), ptr_name, BUFFER_SIZE, 0);  // process 2, name.
+            cpu_memory_rw_debug(ENV_GET_CPU(env), next_pointer_value-(proc_offset_of_next-offset_of_name0) + offset_of_pid, ptr_pid, 4, 0);  // process 2, name.
+            printf("	%d	",*(unsigned int*)ptr_pid);
             if( (strlen(ptr_name) > 0) && (strlen(ptr_name) < 50) )
             {
-                printf("Name of the process is %s\n",ptr_name);
+                printf("%s\n",ptr_name);
                 print_counter++;
             }
         }
@@ -1797,13 +1864,13 @@ void print_processes(void)
 
 static void hmp_ps(Monitor *mon, const QDict *qdict)
 {
-    monitor_printf(mon, "hello ps\n");
+//    monitor_printf(mon, "hello ps\n");
     const char *os = qdict_get_str(qdict, "os");
     if (strcmp(os, "linux") == 0) {
         is_linux = 1;
         proc_name0 = "swapper";
         proc_name1 = "init";
-        monitor_printf(mon, "Okay, so we are dealing with Linux operating system.\n");
+//        monitor_printf(mon, "Okay, so we are dealing with Linux operating system.\n");
     } else if (strcmp(os, "linux24") == 0) {
         is_linux = 1;
         proc_name0 = "swapper";
@@ -1861,12 +1928,109 @@ static void hmp_ps(Monitor *mon, const QDict *qdict)
         return;
     }
 
-    monitor_printf(mon, "We are dealing with %s operating system.\n", os);
+//    monitor_printf(mon, "We are dealing with %s operating system.\n", os);
     if (get_offsets() == -1) {
         printf("Sorry we could not find the offsets to construct the linked list!\n");
         return;
     }
     print_processes();
+}
+
+/* This is just a copy of print_processes, the only difference is we replaced the string process with module" */
+void print_modules(void)
+{
+    char ptr_next[4];
+    char ptr_name[BUFFER_SIZE];
+    long next_pointer_value;
+
+    CPUArchState *env;
+    env = mon_get_cpu();
+
+    print_counter=0; // We have to manually initialize this counter every time we print, otherwise it is going to grow continuously.
+
+    cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name0, ptr_name, BUFFER_SIZE, 0);  // Get module 0 name.
+    printf("Name of the module is %s\n",ptr_name);     // print module 0 name
+    print_counter++;
+
+    cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name1, ptr_name, BUFFER_SIZE, 0);  // Get module 1 name.
+    printf("Name of the module is %s\n",ptr_name);     // print module 1 name
+    print_counter++;
+
+//    printf("proc_offset_of_next is 0x%lx\n", proc_offset_of_next);
+//    printf("offset_of_name0_least4 is 0x%lx\n", offset_of_name0_least4);
+
+    if(next_to_next == 1){      // When "next" points to the "next" pointer, rather than the start of the next structure, this is true for Linux Kernel 2.6 as well as for Windows 7.
+        cpu_memory_rw_debug(ENV_GET_CPU(env), proc_offset_of_next, ptr_next, 4, 0);  // Get module 0, next pointer.
+        next_pointer_value=(*(unsigned int*)ptr_next);
+        while(1){
+            cpu_memory_rw_debug(ENV_GET_CPU(env), next_pointer_value, ptr_next, 4, 0);  // Get module 1, next pointer.
+            if( ((*(unsigned int*)ptr_next) == proc_offset_of_next) || ((*(unsigned int*)ptr_next) == 0) )      // If it points to the next pointer of the first module, we assume we have traversed all modules.
+                break;
+            next_pointer_value=(*(unsigned int*)ptr_next);
+            cpu_memory_rw_debug(ENV_GET_CPU(env), next_pointer_value-(proc_offset_of_next-offset_of_name0), ptr_name, BUFFER_SIZE, 0);  // module 2, name.
+            if( (strlen(ptr_name) > 0) && (strlen(ptr_name) < 50) )
+            {
+                printf("Name of the module is %s\n",ptr_name);
+                print_counter++;
+            }
+        }
+    }else{      // When "next" points to the start of the next structure, this is true for Linux Kernel 2.4 as well as FreeBSD 8.4.
+        cpu_memory_rw_debug(ENV_GET_CPU(env), proc_offset_of_next, ptr_next, 4, 0);  // Get module 0, next pointer.
+        next_pointer_value=(*(unsigned int*)ptr_next);
+//        printf("Value of next pointer is 0x%lx\n", next_pointer_value);
+        if(second_pass == 0){
+            while(1){
+                cpu_memory_rw_debug(ENV_GET_CPU(env), ( (next_pointer_value & 0xfffff000)+ (proc_offset_of_next & 0xfff) ), ptr_next, 4, 0);  // Get module 2, next pointer.
+                if( ((*(unsigned int*)ptr_next) == (proc_offset_of_next & 0xfffff000)) || ((*(unsigned int*)ptr_next) == 0) )   // If it points to the start address of the first module, we assume we have traversed all modules.
+                    break;
+                next_pointer_value=(*(unsigned int*)ptr_next);
+                cpu_memory_rw_debug(ENV_GET_CPU(env), next_pointer_value+offset_of_name0_least4, ptr_name, BUFFER_SIZE, 0);  // Get module 2, name.
+                if( (strlen(ptr_name) > 0) && (strlen(ptr_name) < 50) )
+                {
+                    printf("Name of the module is %s\n",ptr_name);
+                    print_counter++;
+                }
+            }
+        }else{
+            while(1){
+                cpu_memory_rw_debug(ENV_GET_CPU(env), ( next_pointer_value + offset_of_next_in_task ), ptr_next, 4, 0);  // Get module 2, next pointer.
+                if( (*(unsigned int*)ptr_next) == (proc_offset_of_next - offset_of_next_in_task) || ((*(unsigned int*)ptr_next) == 0) ) // If it points to the start address of the first module, we assume we have traversed all modules.
+                    break;
+                next_pointer_value=(*(unsigned int*)ptr_next);
+//                printf("next_pointer_value is 0x%lx\n", next_pointer_value);
+                cpu_memory_rw_debug(ENV_GET_CPU(env), ( next_pointer_value+offset_of_name_in_task ), ptr_name, BUFFER_SIZE, 0);  // Get module 2, name.
+                if( (strlen(ptr_name) > 0) && (strlen(ptr_name) < 50) )
+                {
+                    printf("Name of the module is %s\n", ptr_name);
+                    print_counter++;
+                }
+            }
+        }
+    }
+    printf("Total number of modules: %d\n", print_counter);
+    return;
+}
+
+static void hmp_lsmod(Monitor *mon, const QDict *qdict)
+{
+    const char *os = qdict_get_str(qdict, "os");
+    if (strcmp(os, "linux") == 0) {
+        is_linux = 1;
+        proc_name0 = "dm_snapshot";
+        proc_name1 = "dm_zero";
+//        proc_name0 = "mingetty";
+//        proc_name1 = "mingetty";
+    } else {
+        monitor_printf(mon, "Sorry, The operating system you typed is not supported.\n");
+        return;
+    }
+
+    monitor_printf(mon, "We are dealing with %s operating system.\n", os);
+    if (get_offsets() == -1) {
+        printf("Sorry we could not find the offsets to construct the linked list!\n");
+        return;
+    }
+    print_modules();
 }
 
 /* End of hyperlink code */

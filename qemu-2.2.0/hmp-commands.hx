@@ -591,6 +591,20 @@ Quit the emulator.
 ETEXI
 
     {
+        .name       = "lsmod",
+        .args_type  = "os:s",
+        .params     = "os",
+        .help       = "report a list of the kernel modules in the guest os",
+        .mhandler.cmd = hmp_lsmod,
+    },
+
+STEXI
+@item q or quit
+@findex quit
+Quit the emulator.
+ETEXI
+
+    {
         .name       = "system_reset",
         .args_type  = "",
         .params     = "",
