@@ -1388,7 +1388,7 @@ int get_offsets_point_to_linkedlist(void);
 int get_offsets_point_to_task_struct(void);
 long get_offsets_second_pass(void);
 long get_offsets(void);
-void print_processes(void);
+void print_processes(Monitor *mon);
 
 // For kernel modules
 void print_modules(void);
@@ -1778,7 +1778,7 @@ long get_offsets(void)
     return -1;
 }
 
-void print_processes(void)
+void print_processes(Monitor *mon)
 {
     char ptr_next[4];
     char ptr_name[BUFFER_SIZE];
@@ -1790,19 +1790,19 @@ void print_processes(void)
 
     print_counter=0; // We have to manually initialize this counter every time we print, otherwise it is going to grow continuously.
 
-    printf("	PID	COMMAND\n");
+    monitor_printf(mon,"	PID	COMMAND\n");
     cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name0, ptr_name, BUFFER_SIZE, 0);  // Get process 0 name.
     cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name0 + offset_of_pid, ptr_pid, 4, 0);  // Get process 0 pid.
-    printf("	%d	",*(unsigned int*)ptr_pid);
+    monitor_printf(mon,"	%d	",*(unsigned int*)ptr_pid);
 
-    printf("%s\n",ptr_name);     // print process 0 name
+    monitor_printf(mon,"%s\n",ptr_name);     // print process 0 name
     print_counter++;
 
     cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name1, ptr_name, BUFFER_SIZE, 0);  // Get process 1 name.
     cpu_memory_rw_debug(ENV_GET_CPU(env), offset_of_name1 + offset_of_pid, ptr_pid, 4, 0);  // Get process 1 pid.
-    printf("	%d	",*(unsigned int*)ptr_pid);
+    monitor_printf(mon,"	%d	",*(unsigned int*)ptr_pid);
 
-    printf("%s\n",ptr_name);     // print process 1 name
+    monitor_printf(mon,"%s\n",ptr_name);     // print process 1 name
     print_counter++;
 
 //    printf("proc_offset_of_next is 0x%lx\n", proc_offset_of_next);
@@ -1818,10 +1818,10 @@ void print_processes(void)
             next_pointer_value=(*(unsigned int*)ptr_next);
             cpu_memory_rw_debug(ENV_GET_CPU(env), next_pointer_value-(proc_offset_of_next-offset_of_name0), ptr_name, BUFFER_SIZE, 0);  // process 2, name.
             cpu_memory_rw_debug(ENV_GET_CPU(env), next_pointer_value-(proc_offset_of_next-offset_of_name0) + offset_of_pid, ptr_pid, 4, 0);  // process 2, name.
-            printf("	%d	",*(unsigned int*)ptr_pid);
+            monitor_printf(mon,"	%d	",*(unsigned int*)ptr_pid);
             if( (strlen(ptr_name) > 0) && (strlen(ptr_name) < 50) )
             {
-                printf("%s\n",ptr_name);
+                monitor_printf(mon,"%s\n",ptr_name);
                 print_counter++;
             }
         }
@@ -1838,7 +1838,7 @@ void print_processes(void)
                 cpu_memory_rw_debug(ENV_GET_CPU(env), next_pointer_value+offset_of_name0_least4, ptr_name, BUFFER_SIZE, 0);  // Get process 2, name.
                 if( (strlen(ptr_name) > 0) && (strlen(ptr_name) < 50) )
                 {
-                    printf("Name of the process is %s\n",ptr_name);
+                    monitor_printf(mon,"Name of the process is %s\n",ptr_name);
                     print_counter++;
                 }
             }
@@ -1852,13 +1852,13 @@ void print_processes(void)
                 cpu_memory_rw_debug(ENV_GET_CPU(env), ( next_pointer_value+offset_of_name_in_task ), ptr_name, BUFFER_SIZE, 0);  // Get process 2, name.
                 if( (strlen(ptr_name) > 0) && (strlen(ptr_name) < 50) )
                 {
-                    printf("Name of the process is %s\n", ptr_name);
+                    monitor_printf(mon,"Name of the process is %s\n", ptr_name);
                     print_counter++;
                 }
             }
         }
     }
-    printf("Total number of processes: %d\n", print_counter);
+    monitor_printf(mon,"Total number of processes: %d\n", print_counter);
     return;
 }
 
@@ -1870,7 +1870,7 @@ static void hmp_ps(Monitor *mon, const QDict *qdict)
         is_linux = 1;
         proc_name0 = "swapper";
         proc_name1 = "init";
-//        monitor_printf(mon, "Okay, so we are dealing with Linux operating system.\n");
+        monitor_printf(mon, "Okay, so we are dealing with Linux operating system.\n");
     } else if (strcmp(os, "linux24") == 0) {
         is_linux = 1;
         proc_name0 = "swapper";
@@ -1930,10 +1930,10 @@ static void hmp_ps(Monitor *mon, const QDict *qdict)
 
 //    monitor_printf(mon, "We are dealing with %s operating system.\n", os);
     if (get_offsets() == -1) {
-        printf("Sorry we could not find the offsets to construct the linked list!\n");
+        monitor_printf(mon, "Sorry we could not find the offsets to construct the linked list!\n");
         return;
     }
-    print_processes();
+    print_processes(mon);
 }
 
 /* This is just a copy of print_processes, the only difference is we replaced the string process with module" */
